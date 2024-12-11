@@ -13,16 +13,19 @@ internal class Car
     public string Make { get; set; }
     public string Color { get; set; }
     public int? ParkingSlotsId { get; set; }
+    public string? HouseName { get; set; }
     internal static void Menu()
     {
         while (true)
         {
             Console.Clear();
             List<Car> cars = DatabasDapper.GetAllCars();
-
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Id\tRegnr \tMärke\tFärg\tParkering");
+            Console.ForegroundColor = ConsoleColor.White;
             foreach (Car car in cars)
             {
-                Console.WriteLine(car.Id + "\t" + car.Plate + "\t" + car.Make + "\t" + car.Color + "\t" + car.ParkingSlotsId);
+                Console.WriteLine(car.Id + "\t" + car.Plate + "\t" + car.Make + "\t" + car.Color + "\t" + car.HouseName);
             }
             Console.WriteLine();
             Console.WriteLine("Tryck L för att lägga till bil");
@@ -47,9 +50,11 @@ internal class Car
                 case 'p':
                     Console.Write("\nAnge Id för bil du vill parkera: ");
                     int carId = int.Parse(Console.ReadLine());
-                    Console.Write("Ange vilken plats bilen ska stå på: ");
-                    int spotId = int.Parse(Console.ReadLine());
-                    DatabasDapper.ParkCar(carId, spotId);
+                    ParkingHouse.ShowHouses();
+                    Console.Write("Vilket parkeringshus vill du parkera i? Ange ID: ");
+                    ParkingSlots.ShowSlots(int.Parse(Console.ReadLine()));
+                    Console.Write("Vilken plats vill du stå på? Ange ID: ");
+                    DatabasDapper.ParkCar(carId, int.Parse(Console.ReadLine()));
                     break;
                 case 'c':
                     Console.Write("\nAnge Id för bil du vill checka ut: ");

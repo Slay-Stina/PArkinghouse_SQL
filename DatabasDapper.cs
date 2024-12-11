@@ -17,7 +17,11 @@ internal class DatabasDapper
     //################# BILAR #########################
     public static List<Car> GetAllCars()
     {
-        string sql = "select * from Cars";
+        string sql = @"select Cars.Id, Plate, Make, Color, ParkingSlotsId, HouseName from Cars
+                    left join ParkingSlots ps on
+                    ps.Id = Cars.ParkingSlotsId
+                    left join ParkingHouses ph on
+                    ph.Id = ps.ParkingHouseId";
         List<Car> cars = new List<Car>();
 
         using (var connection = new SqlConnection(connString))
@@ -46,16 +50,18 @@ internal class DatabasDapper
     }
 
     //############### PARKERINGSPLATSER ##################
-    public static List<AllSpots> GetAllSpots()
+    public static List<AllSpots> GetAllFreeSpots()
     {
-        string sql = @"select 
-                        ph.HouseName,
-                        COUNT(*) as PlatserPerHus,
-                        STRING_AGG(ps.SlotNumber, ', ') as Slots
-                        from ParkingHouses ph
-                        join ParkingSlots ps on
-                        ps.ParkingHouseId = ph.Id
-                        group by ph.HouseName";
+        string sql = 
+            @"select ph.HouseName,
+            COUNT(*) as FreeSlots
+            from ParkingHouses ph
+            join ParkingSlots ps on
+            ps.ParkingHouseId = ph.Id
+            left join Cars on
+            Cars.ParkingSlotsId = ps.Id
+            where cars.ParkingSlotsId is null
+            group by ph.HouseName";
 
         List<AllSpots> allSpots = new List<AllSpots>();
 
@@ -92,7 +98,13 @@ internal class DatabasDapper
     //################### PARKERINGSHUS ###########################
     public static List<ParkingHouse> GetHouses()
     {
-        var sql = "select p.Id, HouseName, CityId,c.CityName from ParkingHouses p join Cities c on c.Id = p.CityId";
+        var sql = @"select ph.Id, HouseName, CityId,c.CityName, count(ps.ElectricOutlet) as NrOfOutlets
+                    from ParkingHouses ph
+                    join Cities c on 
+                    c.Id = ph.CityId
+                    join ParkingSlots ps on
+                    ps.ParkingHouseId = ph.Id
+                    group by ph.Id, HouseName, CityId,c.CityName";
         List<ParkingHouse> allHouses = new List<ParkingHouse>();
 
         using (var connection = new SqlConnection(connString))
@@ -118,7 +130,9 @@ internal class DatabasDapper
     //###################### PARKERINGSPLATSER ############################
     internal static List<ParkingSlots> GetSlots(int id)
     {
-        var sql = $"select * from ParkingSlots where ParkingHouseId = {id}";
+        var sql = $"select ps.Id, SlotNumber,ElectricOutlet,ParkingHouseId,ParkingHouses.HouseName,Cars.Plate from ParkingSlots ps " +
+            $"join ParkingHouses on ParkingHouses.Id = ps.ParkingHouseId " +
+            $"left join Cars on ps.Id = Cars.ParkingSlotsId where ParkingHouseId = {id}";
         List<ParkingSlots> allSlots = new List<ParkingSlots>();
 
         using (var connection = new SqlConnection(connString))
@@ -126,5 +140,31 @@ internal class DatabasDapper
             allSlots = connection.Query<ParkingSlots>(sql).ToList();
         }
         return allSlots;
+    }
+
+    internal static List<SlotsCity> GetSlotsCity(int id)
+    {
+        var sql = $"select SlotNumber, ElectricOutlet, HouseName,ParkingHouseId, CityName from ParkingSlots join ParkingHouses on " +
+            $"ParkingHouses.Id = ParkingSlots.ParkingHouseId join Cities on Cities.Id = ParkingHouses.CityId where CityId = {id}";
+        List<SlotsCity> citySlots = new List<SlotsCity>();
+
+        using (var connection = new SqlConnection(connString))
+        {
+            citySlots = connection.Query<SlotsCity>(sql).ToList();
+        }
+        return citySlots;
+    }
+
+    internal static void InsertSlots(int parkingHouseId, int slots)
+    {
+        for (int i = 1; i <= slots; i++)
+        {
+            string sql = $"insert into ParkingSlots(SlotNumber,ElectricOutlet,ParkingHouseId) values ({i},{Random.Shared.Next(2)},'{parkingHouseId}')";
+
+            using (var connection = new SqlConnection(connString))
+            {
+                connection.Execute(sql);
+            }
+        }
     }
 }

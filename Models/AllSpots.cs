@@ -9,6 +9,5 @@ namespace Parkinghouse_SQL.Models;
 internal class AllSpots
 {
     public string HouseName { get; set; }
-    public int PlatserPerHus { get; set; }
-    public string Slots { get; set; }
+    public int FreeSlots { get; set; }
 }

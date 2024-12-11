@@ -8,16 +8,14 @@ internal class Program
     {
         while (true)
         {
-            Console.WriteLine("Databas via Dapper");
-
-        
-
-        List<Models.AllSpots> allSpots = DatabasDapper.GetAllSpots();
-
-        foreach(Models.AllSpots spot in allSpots)
-        {
-            Console.WriteLine($"{spot.HouseName.PadRight(8)}\t{spot.PlatserPerHus}\t{spot.Slots}");
-        }
+            List<Models.AllSpots> allSpots = DatabasDapper.GetAllFreeSpots();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Husnamn \tLediga Platser");
+            Console.ForegroundColor = ConsoleColor.White;
+            foreach (Models.AllSpots spot in allSpots)
+            {
+            Console.WriteLine($"{spot.HouseName.PadRight(8)}\t{spot.FreeSlots}");
+            }
         
             Console.WriteLine();
             Console.WriteLine("Tryck S för städer");

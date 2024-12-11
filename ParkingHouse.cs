@@ -5,46 +5,59 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Parkinghouse_SQL
+namespace Parkinghouse_SQL;
+
+internal class ParkingHouse
 {
-    internal class ParkingHouse
+    public int Id { get; set; }
+    public string HouseName { get; set; }
+    public int CityId { get; set; }
+    public string CityName { get; set; }
+    public int NrOfOutlets { get; set; }
+
+    internal static void Menu()
     {
-        public int Id { get; set; }
-        public string HouseName { get; set; }
-        public int CityId { get; set; }
-        public string CityName { get; set; }
-
-        internal static void Menu()
+        while (true)
         {
-            while (true)
-            {
-                Console.Clear();
-                List<ParkingHouse> houses = DatabasDapper.GetHouses();
-                foreach (ParkingHouse p in houses)
-                {
-                    Console.WriteLine($"{p.Id}\t{p.HouseName.PadRight(8)}\t{p.CityName}");
-                }
-                Console.WriteLine();
-                Console.WriteLine("Tryck L för att lägga till parkeringshus");
-                Console.WriteLine("Tryck V för att visa parkeringsplatser.");
-                Console.WriteLine("Tryck T för att gå tillbaka");
+            Console.Clear();
+            ShowHouses();
+            Console.WriteLine();
+            Console.WriteLine("Tryck L för att lägga till parkeringshus");
+            Console.WriteLine("Tryck I för att visa parkeringsplatser ID.");
+            Console.WriteLine("Tryck S för att visa parkeringsplatser STAD.");
+            Console.WriteLine("Tryck T för att gå tillbaka");
 
-                var key = Console.ReadKey();
-                switch (key.KeyChar)
-                {
-                    case 'l':
-                        Console.Write("\nAnge namn på parkeringshuset: ");
-                        DatabasDapper.insertHouse(Console.ReadLine());
-                        break;
-                    case 'v':
-                        Console.Write("\nAnge Id: ");
-                        ParkingSlots.ShowSlots(int.Parse(Console.ReadLine()));
-                        Console.ReadKey();
-                        break;
-                    case 't':
-                        return;
-                }
+            var key = Console.ReadKey();
+            switch (key.KeyChar)
+            {
+                case 'l':
+                    Console.Write("\nAnge namn på parkeringshuset: ");
+                    DatabasDapper.insertHouse(Console.ReadLine());
+                    break;
+                case 'i':
+                    Console.Write("\nAnge Id för parkeringshus: ");
+                    ParkingSlots.Menu(int.Parse(Console.ReadLine()));
+                    break;
+                case 's':
+                    Console.WriteLine();
+                    Cities.ShowCities();
+                    Console.Write("\nAnge Id för stad: ");
+                    SlotsCity.ShowSlotsCity(int.Parse(Console.ReadLine()));
+                    break;
+                case 't':
+                    return;
             }
+        }
+    }
+    public static void ShowHouses()
+    {
+        List<ParkingHouse> houses = DatabasDapper.GetHouses();
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("HusID\tHusnamn \tStad    \tAntal eluttag");
+        Console.ForegroundColor = ConsoleColor.White;
+        foreach (ParkingHouse p in houses)
+        {
+            Console.WriteLine($"{p.Id}\t{p.HouseName.PadRight(8)}\t{p.CityName.PadRight(8)}\t{p.NrOfOutlets}");
         }
     }
 }
