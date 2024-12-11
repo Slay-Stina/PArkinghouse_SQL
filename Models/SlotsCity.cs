@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Parkinghouse_SQL;
+namespace Parkinghouse_SQL.Models;
 
 internal class SlotsCity
 {
@@ -28,7 +28,7 @@ internal class SlotsCity
             {
                 Console.WriteLine($"{s.SlotNumber}\t{s.ElectricOutlet}\t{s.HouseName.PadRight(8)}\t{s.ParkingHouseId}\t{s.CityName}");
             }
-            
+
             Console.WriteLine("\nTryck I för att visa specifikt parkeringshus");
             Console.WriteLine("\nTryck T för att gå tillbaka");
             var key = Console.ReadKey();

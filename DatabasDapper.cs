@@ -98,13 +98,10 @@ internal class DatabasDapper
     //################### PARKERINGSHUS ###########################
     public static List<ParkingHouse> GetHouses()
     {
-        var sql = @"select ph.Id, HouseName, CityId,c.CityName, count(ps.ElectricOutlet) as NrOfOutlets
+        var sql = @"select ph.Id, HouseName, CityId,c.CityName
                     from ParkingHouses ph
                     join Cities c on 
-                    c.Id = ph.CityId
-                    join ParkingSlots ps on
-                    ps.ParkingHouseId = ph.Id
-                    group by ph.Id, HouseName, CityId,c.CityName";
+                    c.Id = ph.CityId";
         List<ParkingHouse> allHouses = new List<ParkingHouse>();
 
         using (var connection = new SqlConnection(connString))

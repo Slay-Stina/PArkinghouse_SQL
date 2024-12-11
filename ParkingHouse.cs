@@ -53,11 +53,11 @@ internal class ParkingHouse
     {
         List<ParkingHouse> houses = DatabasDapper.GetHouses();
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("HusID\tHusnamn \tStad    \tAntal eluttag");
+        Console.WriteLine("HusID\tHusnamn \tStad");
         Console.ForegroundColor = ConsoleColor.White;
         foreach (ParkingHouse p in houses)
         {
-            Console.WriteLine($"{p.Id}\t{p.HouseName.PadRight(8)}\t{p.CityName.PadRight(8)}\t{p.NrOfOutlets}");
+            Console.WriteLine($"{p.Id}\t{p.HouseName.PadRight(8)}\t{p.CityName.PadRight(8)}");
         }
     }
 }
